@@ -5,6 +5,7 @@ use cosmic::{
     Apply, Element, Task,
     app::ContextDrawer,
     cosmic_config::{self, ConfigGet, ConfigSet},
+    iced::Length,
     iced_core::text::Wrapping,
     surface,
     widget::{self, dropdown, settings, space::horizontal as horizontal_space},
@@ -369,9 +370,8 @@ impl Page {
                 horizontal_space().width(16.).into()
             },
         ])
-        .apply(widget::container)
-        .class(cosmic::theme::Container::List)
         .apply(widget::button::custom)
+        .width(Length::Fill)
         .class(cosmic::theme::Button::Transparent)
         .on_press(Message::Timezone(id))
         .into()

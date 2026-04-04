@@ -195,7 +195,7 @@ impl Model {
 
         let list = families.iter().fold(widget::list_column(), |list, family| {
             let selected = &**family == current_font;
-            list.add(
+            list.add_button(
                 settings::item_row(vec![
                     widget::text::body(&**family)
                         .class(if selected {
@@ -215,12 +215,8 @@ impl Model {
                     } else {
                         horizontal_space().width(16.).into()
                     },
-                ])
-                .apply(widget::container)
-                .class(cosmic::theme::Container::List)
-                .apply(widget::button::custom)
-                .class(cosmic::theme::Button::Transparent)
-                .on_press(callback(family.clone())),
+                ]),
+                callback(family.clone()),
             )
         });
         list.into()

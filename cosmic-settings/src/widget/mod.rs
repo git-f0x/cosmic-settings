@@ -40,7 +40,7 @@ pub fn color_picker_context_view<'a, Message: Clone + 'static>(
         .apply(container)
         .center_x(Length::Fill);
 
-    cosmic::widget::column()
+    cosmic::widget::column::with_capacity(2)
         .push_maybe(description)
         .push(color_picker)
         .align_x(Alignment::Center)
@@ -94,7 +94,7 @@ pub fn page_title<Message: 'static>(page: &page::Info) -> Element<'_, Message> {
 }
 
 #[must_use]
-pub fn unimplemented_page<Message: 'static>() -> Element<'static, Message> {
+pub fn unimplemented_page<Message: Clone + 'static>() -> Element<'static, Message> {
     settings::section().title("")
         .add(text::body("We haven't created that panel yet, and/or it is using a similar idea as current Pop! designs."))
         .into()
@@ -184,31 +184,21 @@ pub fn sub_page_header<'a, Message: 'static + Clone>(
         .into()
 }
 
-pub fn go_next_item<Msg: Clone + 'static>(
-    description: &str,
-    msg_opt: impl Into<Option<Msg>>,
-) -> cosmic::Element<'_, Msg> {
+pub fn go_next_item<Msg: 'static>(description: &str) -> cosmic::Element<'_, Msg> {
     settings::item_row(vec![
-        text::body(description).wrapping(Wrapping::Word).into(),
-        horizontal_space().into(),
+        text::body(description)
+            .width(Length::Fill)
+            .wrapping(Wrapping::Word)
+            .into(),
         icon::from_name("go-next-symbolic").size(16).icon().into(),
     ])
     .width(Length::Fill)
-    .apply(widget::container)
-    .class(cosmic::theme::Container::List)
-    .width(Length::Fill)
-    .apply(button::custom)
-    .width(Length::Fill)
-    .padding(0)
-    .class(theme::Button::Transparent)
-    .on_press_maybe(msg_opt.into())
     .into()
 }
 
-pub fn go_next_with_item<'a, Msg: Clone + 'static>(
+pub fn go_next_with_item<'a, Msg: 'static>(
     description: &'a str,
     item: impl Into<cosmic::Element<'a, Msg>>,
-    msg_opt: impl Into<Option<Msg>>,
 ) -> cosmic::Element<'a, Msg> {
     settings::item_row(vec![
         text::body(description).wrapping(Wrapping::Word).into(),
@@ -221,13 +211,5 @@ pub fn go_next_with_item<'a, Msg: Clone + 'static>(
             .into(),
     ])
     .width(Length::Fill)
-    .apply(widget::container)
-    .class(cosmic::theme::Container::List)
-    .width(Length::Fill)
-    .apply(button::custom)
-    .padding(0)
-    .width(Length::Fill)
-    .class(theme::Button::Transparent)
-    .on_press_maybe(msg_opt.into())
     .into()
 }

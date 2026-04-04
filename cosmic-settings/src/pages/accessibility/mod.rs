@@ -199,6 +199,27 @@ pub fn vision() -> section::Section<crate::pages::Message> {
         .view::<Page>(move |binder, page, section| {
             let descriptions = &section.descriptions;
 
+            let (magnifier_entity, _magnifier_info) = binder
+                .info
+                .iter()
+                .find(|(_, v)| v.id == "accessibility_magnifier")
+                .expect("magnifier page not found");
+
+            let status_text = if page.wayland_available.is_some() {
+                if page.magnifier_state {
+                    &descriptions[on]
+                } else {
+                    &descriptions[off]
+                }
+            } else {
+                &descriptions[unavailable]
+            };
+
+            let magnifier = crate::widget::go_next_with_item(
+                &descriptions[magnifier],
+                text::body(status_text).wrapping(Wrapping::Word),
+            );
+
             settings::section()
                 .title(&section.title)
                 .add(
@@ -209,31 +230,12 @@ pub fn vision() -> section::Section<crate::pages::Message> {
                         },
                     ),
                 )
-                .add({
-                    let (magnifier_entity, _magnifier_info) = binder
-                        .info
-                        .iter()
-                        .find(|(_, v)| v.id == "accessibility_magnifier")
-                        .expect("magnifier page not found");
-
-                    let status_text = if page.wayland_available.is_some() {
-                        if page.magnifier_state {
-                            &descriptions[on]
-                        } else {
-                            &descriptions[off]
-                        }
-                    } else {
-                        &descriptions[unavailable]
-                    };
-
-                    crate::widget::go_next_with_item(
-                        &descriptions[magnifier],
-                        text::body(status_text).wrapping(Wrapping::Word),
-                        page.wayland_available
-                            .is_some()
-                            .then_some(crate::pages::Message::Page(magnifier_entity)),
-                    )
-                })
+                .add_button(
+                    magnifier,
+                    page.wayland_available
+                        .is_some()
+                        .then_some(crate::pages::Message::Page(magnifier_entity)),
+                )
                 .add(
                     settings::item::builder(&descriptions[high_contrast])
                         .toggler(page.theme.is_high_contrast, |enable| {

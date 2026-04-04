@@ -401,9 +401,8 @@ impl Page {
                         horizontal_space().width(16.).into()
                     },
                 ])
-                .apply(widget::container)
-                .class(cosmic::theme::Container::List)
                 .apply(widget::button::custom)
+                .width(Length::Fill)
                 .class(cosmic::theme::Button::Transparent)
                 .on_press(if is_installed {
                     Message::RemoveLanguage(id)
@@ -529,9 +528,8 @@ impl Page {
                         horizontal_space().width(16.).into()
                     },
                 ])
-                .apply(widget::container)
-                .class(cosmic::theme::Container::List)
                 .apply(widget::button::custom)
+                .width(Length::Fill)
                 .class(cosmic::theme::Button::Transparent)
                 .on_press_maybe(if is_selected {
                     None
@@ -684,16 +682,13 @@ mod formatting {
                     .map(|locale| locale.region_name.as_str())
                     .unwrap_or("");
 
-                let select_region = crate::widget::go_next_with_item(
-                    &desc[region_txt],
-                    widget::text::body(region),
-                    Message::RegionContext,
-                );
+                let select_region =
+                    crate::widget::go_next_with_item(&desc[region_txt], widget::text::body(region));
 
                 widget::settings::section()
                     .title(&desc[formatting_txt])
                     .add(formatted_demo)
-                    .add(select_region)
+                    .add_button(select_region, Message::RegionContext)
                     .apply(cosmic::Element::from)
                     .map(Into::into)
             })

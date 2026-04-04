@@ -790,36 +790,42 @@ pub fn interface_density() -> Section<crate::pages::Message> {
 
             settings::section()
                 .title(&section.title)
-                .add(settings::item_row(vec![
-                    radio(
-                        text::body(&descriptions[compact]),
-                        Density::Compact,
-                        Some(page.density),
-                        Message::Density,
-                    )
-                    .width(Length::Fill)
-                    .into(),
-                ]))
-                .add(settings::item_row(vec![
-                    radio(
-                        text::body(&descriptions[comfortable]),
-                        Density::Standard,
-                        Some(page.density),
-                        Message::Density,
-                    )
-                    .width(Length::Fill)
-                    .into(),
-                ]))
-                .add(settings::item_row(vec![
-                    radio(
-                        text::body(&descriptions[spacious]),
-                        Density::Spacious,
-                        Some(page.density),
-                        Message::Density,
-                    )
-                    .width(Length::Fill)
-                    .into(),
-                ]))
+                .add_button(
+                    settings::item_row(vec![
+                        radio(
+                            text::body(&descriptions[compact]),
+                            Density::Compact,
+                            Some(page.density),
+                            Message::Density,
+                        )
+                        .into(),
+                    ]),
+                    Message::Density(Density::Compact),
+                )
+                .add_button(
+                    settings::item_row(vec![
+                        radio(
+                            text::body(&descriptions[comfortable]),
+                            Density::Standard,
+                            Some(page.density),
+                            Message::Density,
+                        )
+                        .into(),
+                    ]),
+                    Message::Density(Density::Standard),
+                )
+                .add_button(
+                    settings::item_row(vec![
+                        radio(
+                            text::body(&descriptions[spacious]),
+                            Density::Spacious,
+                            Some(page.density),
+                            Message::Density,
+                        )
+                        .into(),
+                    ]),
+                    Message::Density(Density::Spacious),
+                )
                 .apply(Element::from)
                 .map(crate::pages::Message::Appearance)
         })
@@ -884,32 +890,31 @@ pub fn experimental() -> Section<crate::pages::Message> {
             let system_font = crate::widget::go_next_with_item(
                 &descriptions[interface_font_txt],
                 text::body(page.drawer.current_font_family(&ContextView::SystemFont)),
-                Message::DrawerOpen(ContextView::SystemFont),
             );
 
             let mono_font = crate::widget::go_next_with_item(
                 &descriptions[monospace_font_txt],
                 text::body(page.drawer.current_font_family(&ContextView::MonospaceFont)),
-                Message::DrawerOpen(ContextView::MonospaceFont),
             );
 
-            let icons_and_toolkit = crate::widget::go_next_item(
-                &descriptions[icons_and_toolkit_txt],
-                Message::DrawerOpen(ContextView::IconsAndToolkit),
-            );
+            let icons_and_toolkit =
+                crate::widget::go_next_item(&descriptions[icons_and_toolkit_txt]);
 
             let mut section = settings::section()
                 .title(&*section.title)
-                .add(system_font)
-                .add(mono_font)
-                .add(icons_and_toolkit);
+                .add_button(system_font, Message::DrawerOpen(ContextView::SystemFont))
+                .add_button(mono_font, Message::DrawerOpen(ContextView::MonospaceFont))
+                .add_button(
+                    icons_and_toolkit,
+                    Message::DrawerOpen(ContextView::IconsAndToolkit),
+                );
 
             #[cfg(feature = "cosmic-comp-config")]
             {
-                section = section.add(crate::widget::go_next_item(
-                    &descriptions[shadow_and_corners_txt],
+                section = section.add_button(
+                    crate::widget::go_next_item(&descriptions[shadow_and_corners_txt]),
                     Message::DrawerOpen(ContextView::ShadowAndCorners),
-                ));
+                );
             }
 
             section
