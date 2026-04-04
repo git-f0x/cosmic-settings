@@ -11,7 +11,7 @@ use cosmic::{
     cosmic_config::{self, ConfigSet},
     iced::{Alignment, Length},
     theme,
-    widget::{self, ListColumn, button, container, icon, radio, row, settings},
+    widget::{self, ListColumn, button, container, icon, list, radio, row, settings},
 };
 use cosmic_comp_config::{KeyboardConfig, NumlockState, XkbConfig};
 use cosmic_settings_page::{self as page, Section, section};
@@ -569,7 +569,7 @@ impl Page {
             }
         }
 
-        widget::column()
+        widget::column::with_capacity(2)
             .spacing(space_l)
             .push(toggler)
             .push(list)
@@ -740,18 +740,19 @@ fn special_character_entry() -> Section<crate::pages::Message> {
 
             settings::section()
                 .title(&section.title)
-                .add(crate::widget::go_next_item(
-                    &descriptions[alternate],
-                    Message::OpenSpecialCharacterContext(SpecialKey::AlternateCharacters),
-                ))
-                .add(crate::widget::go_next_item(
-                    &descriptions[compose],
-                    Message::OpenSpecialCharacterContext(SpecialKey::Compose),
-                ))
-                .add(crate::widget::go_next_item(
-                    &descriptions[caps],
-                    Message::OpenSpecialCharacterContext(SpecialKey::CapsLock),
-                ))
+                .add_button(
+                    list::button(crate::widget::go_next_item(&descriptions[alternate])).on_press(
+                        Message::OpenSpecialCharacterContext(SpecialKey::AlternateCharacters),
+                    ),
+                )
+                .add_button(
+                    list::button(crate::widget::go_next_item(&descriptions[compose]))
+                        .on_press(Message::OpenSpecialCharacterContext(SpecialKey::Compose)),
+                )
+                .add_button(
+                    list::button(crate::widget::go_next_item(&descriptions[caps]))
+                        .on_press(Message::OpenSpecialCharacterContext(SpecialKey::CapsLock)),
+                )
                 .apply(cosmic::Element::from)
                 .map(crate::pages::Message::Keyboard)
         })
@@ -774,10 +775,10 @@ fn keyboard_shortcuts() -> Section<crate::pages::Message> {
                 .iter()
                 .find(|(_, v)| v.id == "keyboard-shortcuts")
             {
-                section = section.add(crate::widget::go_next_item(
-                    &descriptions[shortcuts_desc],
-                    crate::pages::Message::Page(shortcuts_entity),
-                ));
+                section = section.add_button(
+                    list::button(crate::widget::go_next_item(&descriptions[shortcuts_desc]))
+                        .on_press(crate::pages::Message::Page(shortcuts_entity)),
+                );
             }
             section.apply(cosmic::Element::from)
         })
@@ -867,10 +868,10 @@ fn keyboard_num_lock() -> Section<crate::pages::Message> {
 
             settings::section()
                 .title(&section.title)
-                .add(crate::widget::go_next_item(
-                    &descriptions[boot_state],
-                    Message::OpenNumlockContext,
-                ))
+                .add_button(
+                    list::button(crate::widget::go_next_item(&descriptions[boot_state]))
+                        .on_press(Message::OpenNumlockContext),
+                )
                 .apply(cosmic::Element::from)
                 .map(crate::pages::Message::Keyboard)
         })

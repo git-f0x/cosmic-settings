@@ -4,7 +4,7 @@ use cosmic::cosmic_theme::palette::Srgba;
 use cosmic::iced::ContentFit;
 use cosmic::iced_core::{Alignment, Length};
 use cosmic::widget::icon::{from_name, icon};
-use cosmic::widget::{self, button, container, settings, text};
+use cosmic::widget::{self, button, container, list, settings, text};
 use cosmic::{Apply, Element};
 use cosmic_settings_page::Section;
 use cosmic_settings_wallpaper as wallpaper;
@@ -32,13 +32,21 @@ pub fn section() -> Section<crate::pages::Message> {
                 .add(application_background(page, section, &label_keys))
                 .add(container_background(page, section, &label_keys))
                 .add(interface_text(page, section, &label_keys))
-                .add(control_tint(page, section, &label_keys))
-                .add(
-                    settings::item::builder(&descriptions[label_keys["window_hint_toggle"]])
-                        .toggler(
-                            theme_manager.custom_window_hint().is_none(),
-                            Message::UseDefaultWindowHint,
-                        ),
+                .add_button(
+                    list::button(control_tint(page, section, &label_keys))
+                        .on_press(Message::DrawerOpen(ContextView::ControlComponent)),
+                )
+                .add_button(
+                    list::button(
+                        settings::item::builder(&descriptions[label_keys["window_hint_toggle"]])
+                            .toggler(
+                                theme_manager.custom_window_hint().is_none(),
+                                Message::UseDefaultWindowHint,
+                            ),
+                    )
+                    .on_press(Message::UseDefaultWindowHint(
+                        theme_manager.custom_window_hint().is_some(),
+                    )),
                 );
             if theme_manager.custom_window_hint().is_some() {
                 section = section.add(

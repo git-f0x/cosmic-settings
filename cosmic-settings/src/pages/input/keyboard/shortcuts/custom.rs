@@ -444,24 +444,24 @@ impl Page {
             .on_submit(|_| Message::EditCombination)
             .id(self.task_id.clone());
 
-        let name_control = widget::column()
+        let name_control = widget::column::with_capacity(2)
             .spacing(4)
             .push(widget::text::body(fl!("shortcut-name")))
             .push(name_input);
 
-        let command_control = widget::column()
+        let command_control = widget::column::with_capacity(2)
             .spacing(4)
             .push(widget::text::body(fl!("command")))
             .push(task_input);
 
-        let input_fields = widget::column()
+        let input_fields = widget::column::with_capacity(2)
             .spacing(12)
             .push(name_control)
             .push(command_control)
             .padding([16, 24]);
 
         let keys = self.add_shortcut.keys.iter().fold(
-            widget::list_column().spacing(0),
+            widget::list_column(),
             |column, (id, (text, widget_id))| {
                 let key_combination = widget::editable_input(
                     fl!("type-key-combination"),
@@ -483,7 +483,7 @@ impl Page {
             },
         );
 
-        let controls = widget::list_column().add(input_fields).add(keys).spacing(0);
+        let controls = widget::list_column().add(input_fields).add(keys);
 
         let add_keybinding_button = widget::button::standard(fl!("add-another-keybinding"))
             .on_press(Message::AddShortcut)
@@ -491,7 +491,7 @@ impl Page {
             .width(Length::Fill)
             .align_x(Alignment::End);
 
-        widget::column()
+        widget::column::with_capacity(2)
             .spacing(32)
             .push(controls)
             .push(add_keybinding_button)
@@ -739,7 +739,7 @@ fn shortcuts() -> Section<crate::pages::Message> {
                 .width(Length::Fill)
                 .align_x(Alignment::End);
 
-            widget::column()
+            widget::column::with_capacity(2)
                 .push(content)
                 .push(add_shortcut)
                 .spacing(24)

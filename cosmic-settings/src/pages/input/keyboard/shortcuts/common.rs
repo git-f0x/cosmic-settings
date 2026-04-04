@@ -789,7 +789,7 @@ fn context_drawer<'a>(
     });
 
     let bindings = model.bindings.iter().enumerate().fold(
-        widget::list_column().spacing(space_xxs),
+        widget::list_column(),
         |section, (_, (bind_id, shortcut))| {
             let editing = editing == Some(bind_id);
             let text: Cow<'_, str> = if !editing && shortcut.binding.is_set() {

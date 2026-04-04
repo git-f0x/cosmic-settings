@@ -22,8 +22,8 @@ use cosmic::dialog::file_chooser::{self, FileFilter};
 use cosmic::iced::Subscription;
 use cosmic::iced_core::{Alignment, Length};
 use cosmic::widget::{
-    button, color_picker::ColorPickerUpdate, container, radio, row, settings,
-    space::horizontal as horizontal_space, text,
+    button, color_picker::ColorPickerUpdate, container, list, radio, row, settings,
+    space::horizontal, text,
 };
 use cosmic::{Apply, Element, Task, widget};
 #[cfg(feature = "wayland")]
@@ -790,36 +790,42 @@ pub fn interface_density() -> Section<crate::pages::Message> {
 
             settings::section()
                 .title(&section.title)
-                .add(settings::item_row(vec![
-                    radio(
-                        text::body(&descriptions[compact]),
-                        Density::Compact,
-                        Some(page.density),
-                        Message::Density,
-                    )
-                    .width(Length::Fill)
-                    .into(),
-                ]))
-                .add(settings::item_row(vec![
-                    radio(
-                        text::body(&descriptions[comfortable]),
-                        Density::Standard,
-                        Some(page.density),
-                        Message::Density,
-                    )
-                    .width(Length::Fill)
-                    .into(),
-                ]))
-                .add(settings::item_row(vec![
-                    radio(
-                        text::body(&descriptions[spacious]),
-                        Density::Spacious,
-                        Some(page.density),
-                        Message::Density,
-                    )
-                    .width(Length::Fill)
-                    .into(),
-                ]))
+                .add_button(
+                    list::button(settings::item_row(vec![
+                        radio(
+                            text::body(&descriptions[compact]),
+                            Density::Compact,
+                            Some(page.density),
+                            Message::Density,
+                        )
+                        .into(),
+                    ]))
+                    .on_press(Message::Density(Density::Compact)),
+                )
+                .add_button(
+                    list::button(settings::item_row(vec![
+                        radio(
+                            text::body(&descriptions[comfortable]),
+                            Density::Standard,
+                            Some(page.density),
+                            Message::Density,
+                        )
+                        .into(),
+                    ]))
+                    .on_press(Message::Density(Density::Standard)),
+                )
+                .add_button(
+                    list::button(settings::item_row(vec![
+                        radio(
+                            text::body(&descriptions[spacious]),
+                            Density::Spacious,
+                            Some(page.density),
+                            Message::Density,
+                        )
+                        .into(),
+                    ]))
+                    .on_press(Message::Density(Density::Spacious)),
+                )
                 .apply(Element::from)
                 .map(crate::pages::Message::Appearance)
         })
@@ -884,32 +890,39 @@ pub fn experimental() -> Section<crate::pages::Message> {
             let system_font = crate::widget::go_next_with_item(
                 &descriptions[interface_font_txt],
                 text::body(page.drawer.current_font_family(&ContextView::SystemFont)),
-                Message::DrawerOpen(ContextView::SystemFont),
             );
 
             let mono_font = crate::widget::go_next_with_item(
                 &descriptions[monospace_font_txt],
                 text::body(page.drawer.current_font_family(&ContextView::MonospaceFont)),
-                Message::DrawerOpen(ContextView::MonospaceFont),
             );
 
-            let icons_and_toolkit = crate::widget::go_next_item(
-                &descriptions[icons_and_toolkit_txt],
-                Message::DrawerOpen(ContextView::IconsAndToolkit),
-            );
+            let icons_and_toolkit =
+                crate::widget::go_next_item(&descriptions[icons_and_toolkit_txt]);
 
             let mut section = settings::section()
                 .title(&*section.title)
-                .add(system_font)
-                .add(mono_font)
-                .add(icons_and_toolkit);
+                .add_button(
+                    list::button(system_font)
+                        .on_press(Message::DrawerOpen(ContextView::SystemFont)),
+                )
+                .add_button(
+                    list::button(mono_font)
+                        .on_press(Message::DrawerOpen(ContextView::MonospaceFont)),
+                )
+                .add_button(
+                    list::button(icons_and_toolkit)
+                        .on_press(Message::DrawerOpen(ContextView::IconsAndToolkit)),
+                );
 
             #[cfg(feature = "cosmic-comp-config")]
             {
-                section = section.add(crate::widget::go_next_item(
-                    &descriptions[shadow_and_corners_txt],
-                    Message::DrawerOpen(ContextView::ShadowAndCorners),
-                ));
+                section = section.add_button(
+                    list::button(crate::widget::go_next_item(
+                        &descriptions[shadow_and_corners_txt],
+                    ))
+                    .on_press(Message::DrawerOpen(ContextView::ShadowAndCorners)),
+                );
             }
 
             section
@@ -933,7 +946,7 @@ pub fn reset_button() -> Section<crate::pages::Message> {
                     .on_press(Message::Reset)
                     .into()
             } else {
-                horizontal_space().width(1.).apply(Element::from)
+                horizontal().width(1.).apply(Element::from)
             }
             .map(crate::pages::Message::Appearance)
         })
